@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+
+    
+
+    <style>
+
+        body{
+
+            background-color: rgb(87, 143, 81);
+            
+        }
+
+        .grid-container{
+            width: 500px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(5 , 1fr);
+            grid-template-areas: "Result Result Result Result"
+                                 "one two three plus"
+                                 "four five six minus"
+                                 "seven eight nine multi"
+                                 "c zero equal division";
+            background-color: rgb(63, 159, 211);
+            gap: 10px;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .item{
+            background-color: rgba(255, 255, 255, 0.855);
+            width: 100px;
+            height: 100px;
+            text-align: center;
+            font-size: 50px;
+            box-shadow: 1px 2px gray;
+            cursor: pointer;
+        }
+
+        .result{
+            grid-area: Result;
+            background-color: white;
+            width: 100%;
+            height: 100px;
+            font-size: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 1px 2px gray;
+        }
+
+        .one{ grid-area: one; }
+        .two{ grid-area: two; }
+        .three{ grid-area: three; }
+        .plus{ grid-area: plus; background-color: rgb(196, 196, 69); }
+        .four{ grid-area: four; }
+        .five{ grid-area: five; }
+        .six{ grid-area: six; }
+        .minus{ grid-area: minus; background-color: rgb(196, 196, 69); }
+        .seven{ grid-area: seven; }
+        .eight{ grid-area: eight; }
+        .nine{ grid-area: nine; }
+        .multi{ grid-area: multi; background-color: rgb(196, 196, 69); }
+        .c{ grid-area: c; background-color: rgb(196, 69, 69); }
+        .zero{ grid-area: zero; }
+        .equal{ grid-area: equal; }
+        .division{ grid-area: division; background-color: rgb(196, 196, 69); }
+
+    </style>
+
+</head>
+<body>
+
+    <section class="grid-container">
+        <div class="result">0</div>
+        <div class="item one">1</div>
+        <div class="item two">2</div>
+        <div class="item three">3</div>
+        <div class="item plus">+</div>
+        <div class="item four">4</div>
+        <div class="item five">5</div>
+        <div class="item six">6</div>
+        <div class="item minus">-</div>
+        <div class="item seven">7</div>
+        <div class="item eight">8</div>
+        <div class="item nine">9</div>
+        <div class="item multi">*</div>
+        <div class="item c">c</div>
+        <div class="item zero">0</div>
+        <div class="item equal">=</div>
+        <div class="item division">/</div>
+    </section>
+
+    <script>
+        const display = document.querySelector(".result"); 
+        let currentInput = "";
+        let previousInput = "";
+        let operator = null;
+  
+        function updateDisplay(value) {
+          display.textContent = value;
+        }
+    
+        function handleNumber(number) {
+          if (currentInput === "0") {
+            currentInput = number;
+          } else {
+            currentInput += number;
+          }
+          updateDisplay(currentInput);
+        }
+    
+        function handleOperator(op) {
+          if (currentInput === "") return;
+    
+          if (previousInput && operator) {
+            calculate();
+          }
+    
+          operator = op;
+          previousInput = currentInput;
+          currentInput = "";
+        }
+    
+        function calculate() {
+          let result;
+    
+          const prev = parseFloat(previousInput);
+          const current = parseFloat(currentInput);
+    
+          if (isNaN(prev) || isNaN(current)) return;
+    
+          switch (operator) {
+            case "+":
+              result = prev + current;
+              break;
+            case "-":
+              result = prev - current;
+              break;
+            case "*":
+              result = prev * current;
+              break;
+            case "/":
+              result = prev / current;
+              break;
+            default:
+              return;
+          }
+    
+          currentInput = result.toString();
+          operator = null;
+          previousInput = "";
+          updateDisplay(currentInput);
+        }
+    
+        function clearDisplay() {
+          currentInput = "";
+          previousInput = "";
+          operator = null;
+          updateDisplay("0");
+        }
+    
+       
+        document.querySelectorAll(".item").forEach((button) => {
+          button.addEventListener("click", () => {
+            const value = button.textContent;
+    
+            if (!isNaN(value)) {
+              handleNumber(value);
+            } else if (value === "+" || value === "-" || value === "*" || value === "/") {
+              handleOperator(value);
+            } else if (value === "=") {
+              calculate();
+            } else if (value === "c") {
+              clearDisplay();
+            }
+          });
+        });
+      </script>
+
+</body>
+</html>

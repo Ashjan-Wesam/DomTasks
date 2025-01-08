@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments</title>
+</head>
+<body>
+
+    <h1>AJAX Request with Javascfript</h1>
+
+    <input type="text" id="txtInput" placeholder="Javascript">
+    <button id="sendBtn">Send Comment</button>
+    <h1>Get Comments :</h1>
+    <div id="typing" style="color: gray;"></div>
+    <div id="comments"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const txtInput = document.getElementById("txtInput");
+            const sendBtn = document.getElementById("sendBtn");
+            const comments = document.getElementById("comments");
+            const typing = document.getElementById("typing");
+
+            txtInput.addEventListener("input", () => {
+                typing.textContent = txtInput.value;
+            });
+
+         
+            sendBtn.addEventListener("click", () => {
+                const comment = txtInput.value.trim();
+                if (comment) {
+                  
+                    const commentDiv = document.createElement("div");
+                    commentDiv.textContent = comment;
+                    comments.appendChild(commentDiv); 
+
+                  
+                    const xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function() {
+                        if (this.readyState === 4 && this.status === 200) {
+                            
+                            alert("Comment saved successfully");
+                        }
+                    };
+
+                   
+                    xhttp.open("POST", "", true);
+                    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    xhttp.send("comment=" + encodeURIComponent(comment));
+
+                   
+                    txtInput.value = "";
+                    typing.textContent = "";
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

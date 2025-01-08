@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark Mode Toggle</title>
+  <style>
+   
+    body {
+      background-color: white;
+      color: black;
+      font-family: Arial, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dark-mode {
+      background-color: black;
+      color: white;
+    }
+
+   
+    .dark-mode .toggle-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: rgb(255, 255, 255);
+      color: rgb(0, 0, 0);
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .toggle-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: rgb(0, 0, 0);
+      color: rgb(255, 255, 255);
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle-button" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+
+  <h1>Welcome to My Page</h1>
+ 
+  <script>
+
+   if (localStorage.getItem('dark-mode') === 'enabled') {
+      document.body.classList.add('dark-mode');
+    }
+
+    function toggleDarkMode() {
+    
+      document.body.classList.toggle("dark-mode");
+
+      
+      if (document.body.classList.contains("dark-mode")) {
+        localStorage.setItem('dark-mode', 'enabled');
+      } else {
+        localStorage.setItem('dark-mode', 'disabled');
+      }
+    }
+  </script>
+</body>
+</html>

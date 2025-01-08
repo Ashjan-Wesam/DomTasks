@@ -4,8 +4,231 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+      let totalPrice = 0; 
+
+      function updateTotalPrice() {
+        const totalPriceElement = document.getElementById("totalPrice");
+        totalPriceElement.textContent = "Total Price: " + totalPrice.toFixed(2) + " JD";
+      }
+
+      function addToCart(name, price, imageSrc) {
+        const cartTable = document.getElementById("cartTable").querySelector("tbody");
+        const existingRow = Array.from(cartTable.getElementsByTagName("tr")).find(
+          (row) => row.dataset.name === name
+        );
+        
+        if (existingRow) {
+
+          const quantityCell = existingRow.querySelector(".quantity");
+          const currentQuantity = parseInt(quantityCell.textContent);
+          const priceCell = existingRow.querySelector(".price");
+          const newQuantity = currentQuantity + 1;
+          const newPrice = parseFloat(price) * newQuantity;
+
+          quantityCell.textContent = newQuantity;
+          priceCell.textContent = newPrice.toFixed(2); 
+          
+          totalPrice += parseFloat(price); 
+        }
+        else {
+          const row = document.createElement("tr");
+          row.dataset.name = name;
+    
+          const imageCell = document.createElement("td");
+          const img = document.createElement("img");
+          img.src = imageSrc;
+          img.alt = name;
+          img.style.width = "100px";
+          img.style.height = "100px";
+          imageCell.appendChild(img);
+    
+          const priceCell = document.createElement("td");
+          priceCell.textContent = price;
+          priceCell.classList.add("price");
+
+          const quantityCell = document.createElement("td");
+          quantityCell.classList.add("quantity");
+          quantityCell.textContent = "1";
+    
+          const actionCell = document.createElement("td");
+          const plusButton = document.createElement("button");
+          plusButton.textContent = "+";
+          plusButton.onclick = function () {
+            const currentQuantity = parseInt(quantityCell.textContent);
+            quantityCell.textContent = currentQuantity + 1;
+            const newPrice = parseFloat(price) * (currentQuantity + 1);
+            priceCell.textContent = newPrice.toFixed(2);
+            totalPrice += parseFloat(price);
+            updateTotalPrice();
+            saveCartToLocalStorage(); 
+                  };
+    
+          const minusButton = document.createElement("button");
+          minusButton.textContent = "-";
+          minusButton.onclick = function () {
+            const currentQuantity = parseInt(quantityCell.textContent);
+            if (currentQuantity > 1) {
+
+              quantityCell.textContent = currentQuantity - 1;
+              const newPrice = parseFloat(price) * (currentQuantity - 1);
+              priceCell.textContent = newPrice.toFixed(2);
+              totalPrice -= parseFloat(price);
+            }
+            else {
+
+              totalPrice -= parseFloat(price) * parseInt(quantityCell.textContent);   
+              row.remove();
+              
+              
+            }
+            updateTotalPrice();
+            saveCartToLocalStorage(); 
+          };
+    
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "X";
+          deleteButton.onclick = function () {
+            totalPrice -= parseFloat(price) * parseInt(quantityCell.textContent);   
+            row.remove();
+            updateTotalPrice();
+            saveCartToLocalStorage(); 
+          };
+    
+          actionCell.appendChild(plusButton);
+          actionCell.appendChild(minusButton);
+          actionCell.appendChild(deleteButton);
+    
+          row.appendChild(imageCell);
+          row.appendChild(priceCell);
+          row.appendChild(quantityCell);
+          row.appendChild(actionCell);
+    
+          cartTable.appendChild(row);
+
+          totalPrice += parseFloat(price);     
+        }
+        
+        updateTotalPrice(); 
+        saveCartToLocalStorage();  
+      }
+
+     
+      function saveCartToLocalStorage() {
+        const cartData = [];
+        const cartTable = document.getElementById("cartTable").querySelector("tbody");
+        const rows = cartTable.getElementsByTagName("tr");
+
+        for (let row of rows) {
+          const name = row.dataset.name;
+          const quantity = row.querySelector(".quantity").textContent;
+          const price = row.querySelector(".price").textContent;
+          const img =  row.querySelector("img").src;
+          cartData.push({ name, quantity, price ,img });
+        }
+        
+        sessionStorage.setItem("cart", JSON.stringify(cartData));
+      }
+  
+      function loadCartFromLocalStorage() {
+        const cartData = JSON.parse(sessionStorage.getItem("cart"));
+
+        if (cartData) {
+          for (let item of cartData) {
+            addToCart(item.name, parseFloat(item.price), item.img );    
+          
+          }
+        }
+      }
+
+      window.onload = function () {
+        loadCartFromLocalStorage();
+      }
+    </script>
+    
+    <style>
+        #storeCards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .titleAndPrice {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .titleAndPrice p {
+            font-size: 20px;
+        }
+        
+        .card-img-top {
+            height: 70%;
+        }
+        
+        #cartTable {
+            width: 100%;
+            margin-top: 30px;
+        }
+        
+        #cartTable td {
+            padding: 10px;
+        }
+        
+        button {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        
+    </style>
 </head>
 <body>
-    
+  <section id="storeCards">
+    <div class="card" style="width: 18rem;">
+      <img src="iphone.png" class="card-img-top v" alt="...">
+      <div class="card-body">
+        <h3 class="titleAndPrice">
+          <p class="card-text">Iphone 13 pro</p>
+          <p class="card-text">900 JD</p>
+        </h3>
+        <a href="#" class="btn btn-primary" id="Item1" onclick="addToCart('Iphone 13 pro', 900, 'iphone.png')">Add to cart</a>
+      </div>
+    </div>
+  
+    <div class="card" style="width: 18rem;">
+      <img src="headset.png" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h3 class="titleAndPrice">
+          <p class="card-text">Headset</p>
+          <p class="card-text">150 JD</p>
+        </h3>
+        <a href="#" class="btn btn-primary" id="Item2" onclick="addToCart('Headset', 150, 'headset.png')">Add to cart</a>
+      </div>
+    </div>
+  
+    <div class="card" style="width: 18rem;">
+      <img src="keboard.jpg" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h3 class="titleAndPrice">
+          <p class="card-text">Keyboard</p>
+          <p class="card-text">60 JD</p>
+        </h3>
+        <a href="#" class="btn btn-primary" id="Item3" onclick="addToCart('Keyboard', 60, 'keboard.jpg')">Add to cart</a>
+      </div>
+    </div>
+  </section>
+  
+  <table id="cartTable">
+    <tbody>
+     
+    </tbody>
+  </table>
+
+  <p id="totalPrice"></p>
+  
 </body>
 </html>
